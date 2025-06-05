@@ -173,7 +173,7 @@
       thunderSay(msg);
     }
 
-    micBtn.onclick = function(){
+    micBtn.onclick = function() {
       if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         thunderSay("Error: Your browser does not support Speech Recognition...");
         return;
@@ -190,8 +190,13 @@
         let text = e.results[0][0].transcript;
         thunderAnswer(text);
       };
+
       recog.onerror = function(e) {
-        thunderSay("Sorry, I didn't catch that. Try again, Ekspert!");
+        // Only respond to certain errors
+        if (e.error === "no-speech" || e.error === "audio-capture" || e.error === "not-allowed") {
+          thunderSay("Sorry, I didn't catch that. Try speaking a bit louder or check your mic, Ekspert!");
+        }
+        // Don't reply on "aborted" or other system quirks
       };
     };
 
