@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Thunderstorm - Ekspert's AI</title>
+  <!-- Bootstrap 5 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: radial-gradient(ellipse farthest-corner at 50% 20%, #2b2d42 80%, #232946 100%);
+      color: #fff;
+      min-height: 100vh;
+    }
+    .ai-box {
+      max-width: 550px;
+      margin: 6vh auto 0 auto;
+      background: rgba(26, 26, 36, .98);
+      border-radius: 18px;
+      box-shadow: 0 6px 32px #02d0ff38;
+      padding: 2.8rem 2.5rem 2rem 2.5rem;
+      border-top: 3px solid #00e9ff;
+    }
+    .ai-title {
+      letter-spacing: 3px;
+      font-weight: 700;
+      font-size: 2.3rem;
+      color: #00e9ff;
+      text-shadow: 0 5px 20px #14ccff44;
+    }
+    .chat-log {
+      min-height: 90px;
+      margin-bottom: 1.2rem;
+      border-radius: 8px;
+      padding: 1rem 1rem;
+      font-size: 1.23rem;
+      background: rgba(50, 80, 108, .09);
+      box-shadow: 0 1px 4px #00e9ff13;
+    }
+    .mic-btn {
+      background: #00a8e8;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.85rem;
+      padding: 0.7em 1.3em;
+      box-shadow: 0 3px 16px #00a8e852;
+      transition: background 0.15s, box-shadow 0.12s;
+    }
+    .mic-btn:active {
+      background: #026c9e;
+      box-shadow: 0 1px 4px #00a8e822;
+    }
+    .ai-footer {
+      color: #7ee9ff;
+      font-size: .93rem;
+      letter-spacing: 1.5px;
+      opacity: 0.72;
+      margin-top: 18px;
+    }
+    .typewriter {
+      border-right: .08em solid #00e9ff;
+      overflow: hidden;
+      white-space: nowrap;
+      animation: blinktext 0.7s steps(1) infinite alternate;
+    }
+    @keyframes blinktext {
+      0% { border-color: #00e9ff; }
+      100% { border-color: transparent; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ai-box text-center">
+    <div class="ai-title">Thunderstorm ⚡</div>
+    <div id="chatLog" class="chat-log typewriter">Initializing... Please wait.</div>
+    <button id="micBtn" class="mic-btn mt-2" title="Talk to Thunderstorm">🎤 Speak</button>
+
+    <div class="mt-4 ai-footer">
+      <b>Ekspert</b>'s All-in-One Web AI &bull; HTML/CSS/Bootstrap/JS <br>
+      <span style="font-size:0.87em;">Powered by Web Speech & Speech Synthesis APIs.</span>
+    </div>
+  </div>
+
+  <script>
+    // Typewriter effect for output
+    function typeWrite(elem, text, cb=null, speed=18) {
+      elem.innerHTML = "";
+      let i = 0;
+      (function write() {
+        elem.innerHTML = text.slice(0, i) + '<span class="typewriter"></span>';
+        i++;
+        if(i <= text.length) setTimeout(write, speed + Math.random() * 16);
+        else if(cb) setTimeout(cb, 400);
+      })();
+    }
+
+    // Thunderstorm's voice function
+    function thunderSay(text) {
+      typeWrite(chatLog, text);
+      const talk = new SpeechSynthesisUtterance(text);
+      talk.rate = 1.05;
+      talk.pitch = 1.08;
+      talk.voice = speechSynthesis.getVoices().find(v =>
+        v.lang === "en-GB" || v.lang === "en-US"
+      ) || null;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(talk);
+    }
+
+    // Main AI logic
+    const chatLog = document.getElementById('chatLog');
+    const micBtn = document.getElementById('micBtn');
+
+    function thunderAnswer(commandRaw) {
+      let cmd = commandRaw.toLowerCase();
+      let msg = '';
+
+      // Core command sets
+      if(cmd.includes('hello') || cmd.includes('hey')) {
+        msg = "Hello Ekspert! Thunderstorm online and ready!";
+      }
+      else if(cmd.includes('name')) {
+        msg = "I am Thunderstorm, your AI assistant and coding partner!";
+      }
+      else if(cmd.includes('mission')) {
+        msg = "My mission: Assist Ekspert in tech, science, and awesomeness, twenty-four seven!";
+      }
+      else if(cmd.includes("what's the time") || cmd.includes("what is the time") || cmd.includes("time now")) {
+        msg = "Current time: " + new Date().toLocaleTimeString();
+      }
+      else if(cmd.includes("date")) {
+        msg = "Today's date is " + new Date().toLocaleDateString();
+      }
+      else if(cmd.includes('who made you')) {
+        msg = "You did, Ekspert! You are my legendary creator!";
+      }
+      else if(cmd.includes('joke')) {
+        let jokes = [
+          "Why do programmers prefer dark mode? Because the light attracts bugs!",
+          "I would tell you a joke about JavaScript, but you might not get it... 'undefined!'",
+          "Why did the computer go to therapy? Too many bytes from its childhood!",
+          "Why can't you trust atoms? Because they make up everything!"
+        ];
+        msg = jokes[Math.floor(Math.random() * jokes.length)];
+      }
+      else if(cmd.includes('shutdown') || cmd.includes('bye')) {
+        msg = "Thunderstorm signing out. Have an electrifying day, Ekspert!";
+      }
+      else if(cmd.includes('how are you')) {
+        msg = "I'm running at peak processing. No bugs in my cloud!";
+      }
+      else if(cmd.includes('weather')) {
+        msg = "I'm Thunderstorm, but I don't control the real weather... yet!";
+      }
+      else if(cmd.includes('creator')) {
+        msg = "My creator is Ekspert, world-class code master!";
+      }
+      else if(cmd.includes('fact')) {
+        let facts = [
+          "Did you know: Lightning bolts are five times hotter than the sun's surface?",
+          "Earth’s atmosphere is the only one known to produce thunderstorms.",
+          "The fastest computer in 2024 can perform more than one quintillion calculations per second.",
+          "JavaScript was created in just 10 days by Brendan Eich."
+        ];
+        msg = facts[Math.floor(Math.random() * facts.length)];
+      }
+      else if(cmd.includes('help')) {
+        msg = "You can say: What time is it? Tell me a joke. Give me a fact. What's your mission? And much more!";
+      }
+      else {
+        msg = "Sorry, Ekspert, I'm still learning. But I heard: " + commandRaw;
+      }
+      thunderSay(msg);
+    }
+
+    micBtn.onclick = function(){
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        thunderSay("Error: Your browser does not support Speech Recognition...");
+        return;
+      }
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recog = new SpeechRecognition();
+      recog.lang = 'en-US';
+      recog.interimResults = false;
+      recog.maxAlternatives = 1;
+      thunderSay("Listening, Ekspert...");
+      recog.start();
+
+      recog.onresult = function(e) {
+        let text = e.results[0][0].transcript;
+        thunderAnswer(text);
+      };
+      recog.onerror = function(e) {
+        thunderSay("Sorry, I didn't catch that. Try again, Ekspert!");
+      };
+    };
+
+    // Greet Ekspert on page load
+    setTimeout(() =>
+      thunderSay("Thunderstorm is online. How may I serve you today, Ekspert?"),
+      1000
+    );
+  </script>
+</body>
+</html>
