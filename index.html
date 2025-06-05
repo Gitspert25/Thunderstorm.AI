@@ -50,12 +50,25 @@
       background: #026c9e;
       box-shadow: 0 1px 4px #00a8e822;
     }
-    .ai-footer {
-      color: #7ee9ff;
-      font-size: .93rem;
-      letter-spacing: 1.5px;
-      opacity: 0.72;
-      margin-top: 18px;
+    .send-btn {
+      background: #00e9ff;
+      color: #191b24;
+      border: none;
+      border-radius: 20px;
+      padding: 0.3em 1.1em;
+      margin-left: 8px;
+      font-weight: bold;
+      font-size: 1.09rem;
+      box-shadow: 0 1px 6px #00e9ff38;
+      transition: background 0.13s;
+    }
+    .send-btn:active {
+      background: #026c9e;
+      color: #fff;
+    }
+    .text-box-wrap {
+      text-align: center;
+      margin: 12px 0 8px 0;
     }
     .typewriter {
       border-right: .08em solid #00e9ff;
@@ -73,7 +86,14 @@
   <div class="ai-box text-center">
     <div class="ai-title">Thunderstorm ⚡</div>
     <div id="chatLog" class="chat-log typewriter">Initializing... Please wait.</div>
-    <button id="micBtn" class="mic-btn mt-2" title="Talk to Thunderstorm">🎤 Speak</button>
+    
+    <div class="text-box-wrap">
+      <input id="textInput" type="text" class="form-control d-inline-block" autocomplete="off"
+             placeholder="Type your question to Thunderstorm..."
+             style="width: 70%; max-width:340px; display:inline-block;">
+      <button id="sendBtn" class="send-btn">Send</button>
+      <button id="micBtn" class="mic-btn" title="Talk to Thunderstorm">🎤</button>
+    </div>
 
     <div class="mt-4 ai-footer">
       <b>Ekspert</b>'s All-in-One Web AI &bull; HTML/CSS/Bootstrap/JS <br>
@@ -97,19 +117,24 @@
     // Thunderstorm's voice function
     function thunderSay(text) {
       typeWrite(chatLog, text);
-      const talk = new SpeechSynthesisUtterance(text);
-      talk.rate = 1.05;
-      talk.pitch = 1.08;
-      talk.voice = speechSynthesis.getVoices().find(v =>
-        v.lang === "en-GB" || v.lang === "en-US"
-      ) || null;
-      speechSynthesis.cancel();
-      speechSynthesis.speak(talk);
+      if ('speechSynthesis' in window) {
+        const talk = new SpeechSynthesisUtterance(text);
+        talk.rate = 1.05;
+        talk.pitch = 1.08;
+        const voices = speechSynthesis.getVoices();
+        talk.voice = voices.find(v =>
+          v.lang === "en-GB" || v.lang === "en-US"
+        ) || null;
+        speechSynthesis.cancel();
+        speechSynthesis.speak(talk);
+      }
     }
 
     // Main AI logic
     const chatLog = document.getElementById('chatLog');
     const micBtn = document.getElementById('micBtn');
+    const textInput = document.getElementById('textInput');
+    const sendBtn = document.getElementById('sendBtn');
 
     function thunderAnswer(commandRaw) {
       let cmd = commandRaw.toLowerCase();
@@ -173,6 +198,7 @@
       thunderSay(msg);
     }
 
+    // Voice-to-text via microphone
     micBtn.onclick = function() {
       if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         thunderSay("Error: Your browser does not support Speech Recognition...");
@@ -192,18 +218,31 @@
       };
 
       recog.onerror = function(e) {
-        // Only respond to certain errors
         if (e.error === "no-speech" || e.error === "audio-capture" || e.error === "not-allowed") {
           thunderSay("Sorry, I didn't catch that. Try speaking a bit louder or check your mic, Ekspert!");
         }
-        // Don't reply on "aborted" or other system quirks
       };
     };
+
+    // Text input - send with button click
+    sendBtn.onclick = function() {
+      let userText = textInput.value.trim();
+      if(userText.length > 0) {
+        thunderAnswer(userText);
+        textInput.value = '';
+      }
+    };
+    // Or with Enter key
+    textInput.addEventListener("keyup", function(event) {
+      if(event.key === "Enter") {
+        sendBtn.onclick();
+      }
+    });
 
     // Greet Ekspert on page load
     setTimeout(() =>
       thunderSay("Thunderstorm is online. How may I serve you today, Ekspert?"),
-      1000
+      900
     );
   </script>
 </body>
